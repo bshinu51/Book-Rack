@@ -27,33 +27,44 @@ class SearchBooks extends Component {
   }
   componentDidUpdate() {
     if(this.state.needsChange){
-      BooksAPI.search(this.state.query).then((book) => {
-        var books = [];
-        for(let i=0; i<book.length; i++){
-          let isAdded = false;
-          for(let j=0; j<this.state.allList.length; j++){
-            if(this.state.allList[j].id===book[i].id){
-              books.push(this.state.allList[j]);
-              isAdded = true;
-              break;
+      if(this.state.query){
+        BooksAPI.search(this.state.query).then((book) => {
+          var books = [];
+          if(Array.isArray(book)){
+            for(let i=0; i<book.length; i++){
+              let isAdded = false;
+              for(let j=0; j<this.state.allList.length; j++){
+                if(this.state.allList[j].id===book[i].id){
+                  books.push(this.state.allList[j]);
+                  isAdded = true;
+                  break;
+                }
+              }
+              if(!isAdded){
+                book[i].shelf = "none";
+                books.push(book[i]);
+              }
             }
+            if(this.state.query){
+              this.setState({ query: this.state.query, searchList: books ,needsChange:false})
+            } else {
+              this.setState({ query: this.state.query, searchList: [] ,needsChange:false})
+            }
+          } else {
+            this.setState({ query: this.state.query, searchList: [] ,needsChange:false})
           }
-          if(!isAdded){
-            book[i].shelf = "none";
-            books.push(book[i]);
-          }
-        }
-        if(Array.isArray(book)){
-          console.log(books);
-          this.setState({ query: this.state.query, searchList: books ,needsChange:false})
-        } else {
-          this.setState({ query: this.state.query, searchList: [] ,needsChange:false})
-        }
-      })
+        })
+      } else {
+        this.setState({ query: this.state.query, searchList: [] ,needsChange:false})
+      }
     }
   }
   updateQuery(query){
-    this.setState({ query: query, searchList: this.state.searchList, needsChange:true});
+    if(query.length>0){
+      this.setState({ query: query, searchList: this.state.searchList, needsChange:true});
+    } else {
+      this.setState({ query: query, searchList: [], needsChange:true});
+    }
   }
   handler(){
     console.log("Future Implementation");
