@@ -6,19 +6,15 @@ import BookShelf from './BookShelf'
 
 class RenderBooks extends Component {
   state = {
-    bookList: [],
-    needsUpdate: true
+    bookList: []
   }
   componentDidMount(){
-    console.log("Mount");
-    if(this.state.needsUpdate){
-      BooksAPI.getAll().then((book) => {
-        this.setState({bookList:book, needsUpdate:false})
-      })
-    }
+    BooksAPI.getAll().then((book) => {
+      this.setState({bookList:book, needsUpdate:false})
+    })
   }
   handler(){
-    this.setState({bookList: this.state.bookList,needsUpdate: true});
+    this.setState({bookList: this.state.bookList});
   }
   render(){
     const bookList = this.state.bookList;
